@@ -1,23 +1,26 @@
 const fs = require('fs/promises');
 const path = require('path');
 
-const sortFolderByGender = async (read, gender, write) => {
+const reader = async (read, folder) => {
     try {
-        const files = await fs.readdir(path.join(__dirname, read));
+        const files = await fs.readdir(read);
 
         for (const file of files) {
-            const filePath = path.join(__dirname, read, file);
-            const data = await fs.readFile(filePath);
-            const user = JSON.parse(data.toString());
+            const filePath = path.join(read, file);
+            const stat = await fs.stat(filePath);
 
-            if (user.gender === gender) {
-                await fs.rename(filePath, path.join(__dirname, write, file))
+            if (stat.isFile()) {
+                await fs.rename(filePath, path.join(__dirname, folder, file));
+            }
+
+            if (stat.isDirectory()){
+                await reader(filePath,folder);
             }
         }
+
     } catch (e) {
         console.log(e);
     }
 }
 
-sortFolderByGender('girls','male','boys');
-sortFolderByGender('boys','female','girls');
+reader('folderForRead','exitFolder');
