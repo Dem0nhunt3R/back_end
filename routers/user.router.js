@@ -14,7 +14,13 @@ userRouter.get('/:id',
     commonMiddleware.isIdValid,
     userMiddleware.isUserPresent,
     userController.getUserById);
-userRouter.put('/:id',userMiddleware.isUserPresent,userMiddleware.isUpdatedUserValid,userController.updateUserById);
+userRouter.put(
+    '/:id',
+    userMiddleware.isUserPresent,
+    userMiddleware.isUserUnique,
+    userMiddleware.isUpdatedUserValid,
+    userController.updateUserById
+);
 userRouter.delete('/:id',
     commonMiddleware.isIdValid,
     userMiddleware.isUserPresent,

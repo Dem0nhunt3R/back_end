@@ -24,7 +24,7 @@ module.exports = {
         try {
             const {id} = req.params;
 
-            const user = userService.findUser({_id:id});
+            const user = userService.findUser({_id: id});
 
             if (!user) {
                 return (new CustomError('User not found'));
@@ -39,20 +39,27 @@ module.exports = {
 
     isUserUnique: async (req, res, next) => {
         try {
-            const {email} = req.body;
+            const {email, name} = req.body;
 
-            const user = await userService.findUser({email});
+            const userByEmail = await userService.findUser({email});
+            const userByName = await userService.findUser({name});
 
-            if (user) {
+            if (userByEmail) {
                 return next(new CustomError(`User with email '${email}' is already exist`, 409));
             }
 
-            req.user = user;
+            if (userByName && userByName.name.toLowerCase() === name.toLowerCase()) {
+                return next(new CustomError(`User with name '${name}' is already exist`, 409));
+            }
+
+            req.user = userByEmail;
             next();
-        } catch (e) {
+        } catch
+            (e) {
             next(e);
         }
-    },
+    }
+    ,
 
     isEmailRegistered: async (req, res, next) => {
         try {
